@@ -27,7 +27,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
-    String url="";
+    //String url="";
+    String currentImage="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
         final ProgressBar p=findViewById(R.id.progressbar);
         p.setVisibility(View.VISIBLE);
         // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-        url ="https://meme-api.herokuapp.com/gimme";
+       // RequestQueue queue = Volley.newRequestQueue(this);
+       String  url ="https://meme-api.herokuapp.com/gimme";
 
 // Request a string response from the provided URL.
         JsonObjectRequest jsonObjectRequest =new JsonObjectRequest
@@ -48,9 +49,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String url=response.getString("url");
+                             currentImage=response.getString("url");
                             ImageView memeImageView=findViewById(R.id.memeImageView);
-                            Glide.with(MainActivity.this).load(url).listener(new RequestListener<Drawable>() {
+                            Glide.with(MainActivity.this).load(currentImage).listener(new RequestListener<Drawable>() {
                                 @Override
                                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                     p.setVisibility(View.GONE);
@@ -77,12 +78,13 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 // Add the request to the RequestQueue.
-        queue.add(jsonObjectRequest);
+       // queue.add(jsonObjectRequest);
+        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
     public void shareMeme(View view) {
         Intent i=new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");
-        i.putExtra(Intent.EXTRA_TEXT,"check this out"+url);
+        i.putExtra(Intent.EXTRA_TEXT,"check this out  "+currentImage);
         Intent chooser=Intent.createChooser(i,"share this meme...");
         startActivity(chooser);
     }
